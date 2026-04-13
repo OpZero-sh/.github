@@ -97,7 +97,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 | Repo | What it does | |
 |------|-------------|---|
-| **[cli](https://github.com/opzero-sh/cli)** | `opzero` CLI + `@opzero/core` API client + `@opzero/mcp` server (26 tools). TypeScript, Bun. | [Details](#cli) |
+| **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | `opzero` CLI + `@opzero/core` API client + `@opzero/mcp` server (26 tools). TypeScript, Bun. | [Details](#opz_cli) |
 | **[skills](https://github.com/opzero-sh/skills)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skills) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
@@ -110,9 +110,9 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 ---
 
-### cli
+### OpZ_CLI
 
-**[github.com/opzero-sh/cli](https://github.com/opzero-sh/cli)** — Deploy websites from your terminal. Powered by opzero.sh.
+**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — Deploy websites from your terminal. Powered by opzero.sh.
 
 A Bun monorepo with three packages:
 
