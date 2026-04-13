@@ -97,7 +97,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 | Repo | What it does | |
 |------|-------------|---|
-| **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | `opzero` CLI + `@opzero/core` API client + `@opzero/mcp` server (26 tools). TypeScript, Bun. | [Details](#opz_cli) |
+| **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
 | **[skills](https://github.com/opzero-sh/skills)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skills) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
@@ -112,18 +112,19 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 ### OpZ_CLI
 
-**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — Deploy websites from your terminal. Powered by opzero.sh.
+**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — The local MCP surface for OpZ.
 
-A Bun monorepo with three packages:
+OpZero.sh is the hosted platform. OpZ_CLI is the local counterpart — a terminal CLI with all the OpZero tools, plus a local MCP server designed to be used directly with Claude Code. Where the hosted MCP server (`@opzero/mcp` on the platform) serves remote clients, the CLI's MCP server runs on your machine alongside your agent, with no network round-trip and no auth overhead.
 
 | Package | npm | What it does |
 |---------|-----|-------------|
 | `opzero` | [![npm](https://img.shields.io/npm/v/opzero)](https://www.npmjs.com/package/opzero) | CLI binary — deploy, login, projects, domains, rollback, templates, and more |
 | `@opzero/core` | [![npm](https://img.shields.io/npm/v/@opzero/core)](https://www.npmjs.com/package/@opzero/core) | API client library — `OpZeroClient`, `AuthManager`, types |
-| `@opzero/mcp` | [![npm](https://img.shields.io/npm/v/@opzero/mcp)](https://www.npmjs.com/package/@opzero/mcp) | 26-tool MCP server + focused 10-tool Claude Code plugin |
+| `@opzero/mcp` | [![npm](https://img.shields.io/npm/v/@opzero/mcp)](https://www.npmjs.com/package/@opzero/mcp) | 26-tool MCP server (full) + 10-tool Claude Code plugin (focused) |
 
 ```bash
-npx opzero deploy ./dist    # deploy from terminal
+npx opzero deploy ./dist             # deploy from terminal
+curl -fsSL https://opzero.sh/install-mcp.sh | bash   # add to Claude Code
 ```
 
 ### skills
