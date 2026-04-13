@@ -2,7 +2,7 @@
 
 **Production infrastructure for the agentic era.**
 
-AI agents can write code. What they can't do — yet — is ship it, authenticate it, test it, observe it, or operate it without human glue. OpZ is a composable platform that fills every gap between "the agent wrote the code" and "it's running in production with guardrails."
+AI agents can write code. What they can't do — yet — is ship it, authenticate it, test it, [observe](https://opzero.sh/blog/mcp-audit-camp-letters) it, or operate it without human glue. OpZ is a composable platform that fills every gap between "the agent wrote the code" and "it's running in production with guardrails."
 
 10 repositories. Auth, deploy, test, observe, orchestrate — each one standalone, all of them wired together.
 
