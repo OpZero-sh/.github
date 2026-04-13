@@ -98,7 +98,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 | Repo | What it does | |
 |------|-------------|---|
 | **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
-| **[skills](https://github.com/opzero-sh/skills)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skills) |
+| **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
@@ -127,9 +127,9 @@ npx opzero deploy ./dist             # deploy from terminal
 curl -fsSL https://opzero.sh/install-mcp.sh | bash   # add to Claude Code
 ```
 
-### skills
+### skillZ
 
-**[github.com/opzero-sh/skills](https://github.com/opzero-sh/skills)** — Official agent skills for 20+ AI agents.
+**[github.com/opzero-sh/skillZ](https://github.com/opzero-sh/skillZ)** — Official agent skills for 20+ AI agents.
 
 Declarative SKILL.md playbooks that any compatible agent can follow. No SDK, no runtime — just markdown with YAML frontmatter.
 
@@ -142,7 +142,7 @@ Declarative SKILL.md playbooks that any compatible agent can follow. No SDK, no 
 | `static-site-best-practices` | Static site optimization |
 
 ```bash
-npx skills add opzero-sh/skills
+npx skills add opzero-sh/skillZ
 ```
 
 ### MCPAuthKit
@@ -285,7 +285,7 @@ curl -fsSL https://opzero.sh/install-mcp.sh | bash
 ### Add agent skills
 
 ```bash
-npx skills add opzero-sh/skills
+npx skills add opzero-sh/skillZ
 ```
 
 ---
@@ -310,5 +310,5 @@ npx skills add opzero-sh/skills
 - **Website:** [opzero.sh](https://opzero.sh)
 - **CLI:** [npm/opzero](https://www.npmjs.com/package/opzero)
 - **MCP Server:** [npm/@opzero/mcp](https://www.npmjs.com/package/@opzero/mcp)
-- **Skills:** `npx skills add opzero-sh/skills`
+- **Skills:** `npx skills add opzero-sh/skillZ`
 - **AuthKit:** [authkit.open0p.com](https://authkit.open0p.com)
