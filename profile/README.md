@@ -16,7 +16,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 |-----------|-------------|----------|
 | **Deployment** | Agent writes code, human copies it to a host | Agent deploys to Cloudflare/Vercel/Netlify via MCP or CLI |
 | **Auth** | Every MCP server re-implements OAuth from scratch | MCPAuthKit: one Worker, full spec, five minutes |
-| **Remote access** | Claude Code is locked to your terminal | CodeZ: phone, tablet, browser — agents control agents |
+| **Orchestration** | Claude Code runs in terminal, browser, mobile — but they're separate islands | CodeZ: unified surface + Claude chat as the orchestration layer for Claude Code agents |
 | **Testing** | Manual QA or fragile test scripts | UAT: 46 MCP tools, agents write and run acceptance tests |
 | **Context limits** | Agent chokes on large outputs, loses history | token-5-0: vaults payloads, keeps summaries on the beat |
 | **Operability** | Each tool is an island, nothing composes | Shared data layer, shared auth, shared MCP protocol end-to-end |
@@ -100,7 +100,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 | **[cli](https://github.com/opzero-sh/cli)** | `opzero` CLI + `@opzero/core` API client + `@opzero/mcp` server (26 tools). TypeScript, Bun. | [Details](#cli) |
 | **[skills](https://github.com/opzero-sh/skills)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skills) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
-| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Self-hosted web UI for Claude Code. Mobile-first, no API key required. | [Details](#codez) |
+| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
 | **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
 | **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
@@ -185,44 +185,39 @@ Running in production at [authkit.open0p.com](https://authkit.open0p.com).
 
 ### CodeZ
 
-**[github.com/opzero-sh/CodeZ](https://github.com/opzero-sh/CodeZ)** — Self-hosted web UI for Claude Code.
+**[github.com/opzero-sh/CodeZ](https://github.com/opzero-sh/CodeZ)** — Claude chat as an orchestration layer for Claude Code agents.
 
-Use Claude Code from your phone, tablet, or any browser — no API key required. Your Claude Max subscription handles auth via OAuth.
+Claude Code already runs in the terminal, in the browser, and on mobile. The problem isn't access — it's that these surfaces are islands. Sessions don't cross devices, you can't direct one agent from another, and there's no unified view of what your agents are doing across projects.
 
-CodeZ spawns the `claude` CLI in `stream-json` duplex mode, keeps stdin open across turns so the context cache stays warm, and streams everything back to the browser via SSE. It also exposes a remote MCP server (17 tools) so **Claude chat can orchestrate Claude Code sessions** — your AI talks to your AI.
+CodeZ solves this by exposing Claude Code sessions as an MCP server. Any MCP client — including Claude chat on iOS, desktop, or web — can connect and get full programmatic control: spawn sessions, send prompts, approve permissions, watch output, track costs. **Claude chat becomes the orchestration layer for Claude Code agents.**
 
 ```
-  Phone / Browser                CodeZ (Bun server)              Claude Code CLI
-       |                              |                               |
-       |  HTTPS (Cloudflare Tunnel)   |                               |
-       |----------------------------->|                               |
-       |                              |  spawn claude --stream-json   |
-       |                              |------------------------------>|
-       |                              |  stdout events (live stream)  |
-       |       SSE (real-time)        |<------------------------------|
-       |<-----------------------------|                               |
-       |                              |                               |
-       |  Send prompt                 |  stdin (context cache warm)   |
-       |----------------------------->|------------------------------>|
-       |                              |                               |
-
-
-  Claude Chat (iOS / Desktop / Web)
-       |
-       |  MCP Streamable HTTP + MCPAuthKit OAuth
-       |
-       v
-  CodeZ MCP Server (17 tools)
-       |
-       +-- create_session      — spawn sessions in any project
-       +-- send_prompt         — send prompts to running sessions
-       +-- poll_events         — watch real-time streaming output
-       +-- respond_permission  — approve/deny tool permission requests
-       +-- get_observability   — cost and token tracking
-       +-- ...12 more          — abort, fork, dispose, search, state
+  Claude Chat (iOS / Desktop / Web)          CodeZ              Claude Code Agents
+       |                                       |                       |
+       |  "Start a session in ~/api and        |                       |
+       |   fix the auth bug"                   |                       |
+       |  ──── MCP: create_session ──────────> |                       |
+       |                                       | spawn claude          |
+       |                                       |────────────────────> [agent 1]
+       |  "Also refactor the tests in ~/web"   |                       |
+       |  ──── MCP: create_session ──────────> |                       |
+       |                                       | spawn claude          |
+       |                                       |────────────────────> [agent 2]
+       |                                       |                       |
+       |  ──── MCP: poll_events ─────────────> |  stream from both     |
+       |  <──── real-time output ──────────────|<──────────────────── [1] [2]
+       |                                       |                       |
+       |  "Agent 1 wants to edit server.ts,    |                       |
+       |   approve it"                         |                       |
+       |  ──── MCP: respond_permission ──────> |────────────────────> [agent 1]
+       |                                       |                       |
+       |  ──── MCP: get_observability ───────> |                       |
+       |  <──── cost: $0.42 across 2 sessions ─|                       |
 ```
 
-Mobile-first (iPhone-optimized PWA), voice input, command palette, subagent team grid, cyberpunk UI. Runs on your machine, tunneled through Cloudflare — nothing phones home.
+The web UI is a parallel surface — mobile-first PWA with voice input, subagent team grid, session search, and real-time streaming — but the MCP server is the primitive. Anything that speaks MCP can orchestrate Claude Code through CodeZ.
+
+Self-hosted. Runs on your machine, tunneled through Cloudflare. No API key required — uses your Claude Max subscription via OAuth. Nothing phones home.
 
 ### uat
 
