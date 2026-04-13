@@ -97,13 +97,13 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 | Repo | What it does | |
 |------|-------------|---|
+| **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
+| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
 | **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
 | **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
-| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
 | **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
-| **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
 | **backend** `private` | `@opzero/db` — shared Drizzle schema, multi-provider abstraction, migrations. | [Details](#backend) |
 | **mcp-authkit-vercel** `private` | MCPAuthKit variant for Vercel Edge Functions + Turso. | [Details](#mcp-authkit-vercel) |
 | **Infra** `private` | Workspace control plane, IaC (OpenTofu), dev containers, agent orchestration. | [Details](#infra) |
