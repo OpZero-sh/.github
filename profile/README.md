@@ -134,11 +134,47 @@ Claude / ChatGPT              MCPAuthKit              Your MCP Server
 
 Running in production at [authkit.open0p.com](https://authkit.open0p.com). Also available as a Vercel Edge variant (`mcp-authkit-vercel` `private`).
 
-### Agent Tooling
+### Agent Tooling — [CodeZ](https://github.com/opzero-sh/CodeZ)
+
+Self-hosted web UI for Claude Code. Use it from your phone, tablet, or any browser — no API key required. Your Claude Max subscription handles auth via OAuth.
+
+CodeZ spawns the `claude` CLI in `stream-json` duplex mode, keeps stdin open across turns so the context cache stays warm, and streams everything back to the browser via SSE. It also exposes a remote MCP server (17 tools) so **Claude chat can orchestrate Claude Code sessions** — your AI talks to your AI.
+
+```
+  Phone / Browser                CodeZ (Bun server)              Claude Code CLI
+       |                              |                               |
+       |  HTTPS (Cloudflare Tunnel)   |                               |
+       |----------------------------->|                               |
+       |                              |  spawn claude --stream-json   |
+       |                              |------------------------------>|
+       |                              |  stdout events (live stream)  |
+       |       SSE (real-time)        |<------------------------------|
+       |<-----------------------------|                               |
+       |                              |                               |
+       |  Send prompt                 |  stdin (context cache warm)   |
+       |----------------------------->|------------------------------>|
+       |                              |                               |
+
+
+  Claude Chat (iOS / Desktop / Web)
+       |
+       |  MCP Streamable HTTP + MCPAuthKit OAuth
+       |
+       v
+  CodeZ MCP Server (17 tools)
+       |
+       +-- create_session      — spawn sessions in any project
+       +-- send_prompt         — send prompts to running sessions
+       +-- poll_events         — watch real-time streaming output
+       +-- respond_permission  — approve/deny tool permission requests
+       +-- get_observability   — cost and token tracking
+       +-- ...12 more          — abort, fork, dispose, search, state
+```
+
+Mobile-first (iPhone-optimized PWA), voice input, command palette, subagent team grid, cyberpunk UI. Runs on your machine, tunneled through Cloudflare — nothing phones home.
 
 | Repo | Description |
 |------|-------------|
-| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Self-hosted web UI for Claude Code. Mobile-first, no API key required. MCP + MCPAuthKit OAuth for orchestrating sessions from any device. |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser automation, API testing, and MCP server verification. Playwright + Bun. |
 | **[token-5-0](https://github.com/opzero-sh/token-5-0)** | The token police. Claude Code plugin that vaults oversized outputs to local SQLite and keeps compact summaries on the beat. |
 
