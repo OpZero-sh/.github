@@ -120,7 +120,7 @@ The pattern:
 | **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
-| **CodeZ Hub** `coming soon` | Multi-machine connection broker. Phone book, not router — client picks the target. | [Details](#codez-hub) |
+| **CodeZ Hub** `coming soon` | Multi-machine operator on Cloudflare Edge. Holds the lines, client picks the target. | [Details](#codez-hub) |
 | **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
 | **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
@@ -245,7 +245,7 @@ Self-hosted. Runs on your machine, tunneled through Cloudflare. No API key requi
 
 `coming soon` — Multi-machine connection broker on Cloudflare Edge.
 
-CodeZ runs on one machine. CodeZ Hub federates CodeZ instances across machines and cloud containers behind a single MCP endpoint — but it's a **phone book, not a router**. The Hub doesn't decide where work goes. It tells the client what's available, and the client makes the call.
+CodeZ runs on one machine. CodeZ Hub federates CodeZ instances across machines and cloud containers behind a single MCP endpoint — but it's an **operator, not a router**. The Hub doesn't decide where work goes. It holds the lines open, tells the client who's available, and connects the call.
 
 This is deliberate. The intelligence sits in the client — Claude.ai with your full context, or a script you write. You know which machine has the repo checked out, which one has the VPN connected, which one is on battery. A "smart" hub would just get in the way.
 
@@ -318,7 +318,7 @@ The client — you, or Claude acting as your orchestrator — picks the machine 
 | Event aggregation | Multiplex SSE from N machines into one client stream |
 | Auth | MCPAuthKit — is this client allowed to talk to this machine |
 
-It doesn't route, doesn't decide, doesn't transform. Clean relay with a phone book. Built on Cloudflare Agents SDK.
+It doesn't route, doesn't decide, doesn't transform. A switchboard operator — holds the lines open, connects the calls, stays out of the conversation. Built on Cloudflare Agents SDK.
 
 ### uat
 
