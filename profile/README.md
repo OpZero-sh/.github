@@ -1,88 +1,94 @@
-# OpZero
+# OpZ
 
-**Your AI builds it. We put it on the internet.**
+**Production infrastructure for the agentic era.**
 
-Build with Claude, ChatGPT, Cursor, Codex, or any AI agent. OpZero deploys your app or site to a real URL, on a real host, in seconds.
+AI agents can write code. What they can't do — yet — is ship it, authenticate it, test it, observe it, or operate it without human glue. OpZ is a composable platform that fills every gap between "the agent wrote the code" and "it's running in production with guardrails."
+
+10 repositories. Auth, deploy, test, observe, orchestrate — each one standalone, all of them wired together.
 
 [![Website](https://img.shields.io/badge/opzero.sh-000?style=for-the-badge&logo=vercel&logoColor=white)](https://opzero.sh)
 [![npm](https://img.shields.io/npm/v/opzero?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/opzero)
 [![MCP](https://img.shields.io/npm/v/@opzero/mcp?style=for-the-badge&label=MCP&logo=npm&logoColor=white)](https://www.npmjs.com/package/@opzero/mcp)
+
+### What OpZ solves
+
+| Pain point | Without OpZ | With OpZ |
+|-----------|-------------|----------|
+| **Deployment** | Agent writes code, human copies it to a host | Agent deploys to Cloudflare/Vercel/Netlify via MCP or CLI |
+| **Auth** | Every MCP server re-implements OAuth from scratch | MCPAuthKit: one Worker, full spec, five minutes |
+| **Remote access** | Claude Code is locked to your terminal | CodeZ: phone, tablet, browser — agents control agents |
+| **Testing** | Manual QA or fragile test scripts | UAT: 46 MCP tools, agents write and run acceptance tests |
+| **Context limits** | Agent chokes on large outputs, loses history | token-5-0: vaults payloads, keeps summaries on the beat |
+| **Operability** | Each tool is an island, nothing composes | Shared data layer, shared auth, shared MCP protocol end-to-end |
 
 ---
 
 ## Architecture
 
 ```
-                          +-----------------+
-                          |   AI  Agents    |
-                          | Claude, Cursor, |
-                          | Copilot, Codex  |
-                          +--------+--------+
+                    +---------------------------------------------+
+                    |              AI  Agents                      |
+                    |   Claude, Cursor, Copilot, Codex, ChatGPT   |
+                    +----------------------+----------------------+
+                                           |
+              +----------------------------+----------------------------+
+              |                            |                            |
+        +-----------+               +------------+               +-----------+
+        |  Skills   |               | MCP Server |               |    CLI    |
+        | (SKILL.md)|               |  26 tools  |               |  opzero   |
+        +-----------+               +-----+------+               +-----+-----+
+              |                           |                            |
+              +---------------------------+----------------------------+
+                                          |
+                  +-----------------------+-----------------------+
+                  |                                               |
+           +------+-------+                              +-------+--------+
+           | MCPAuthKit   |                              |  @opzero/core  |
+           | OAuth 2.1    |                              |  (API client)  |
+           | (CF Worker   |                              +-------+--------+
+           |  or Vercel)  |                                      |
+           +------+-------+                              +-------+--------+
+                  |                                      |   OpZero.sh    |
+                  |    authenticates                     |   Platform     |
+                  +------------------------------------->| Next.js + API  |
+                                                        +-------+--------+
+                                                                |
+                            +-----------------------------------+------------------+
+                            |                                   |                  |
+                   +--------+-------+                  +--------+-------+  +-------+--------+
+                   | Cloudflare     |                  |    Vercel      |  |    Netlify     |
+                   |   Pages        |                  |                |  |                |
+                   +--------+-------+                  +--------+-------+  +-------+--------+
+                            |                                   |                  |
+                            +-----------------------------------+------------------+
+                                                        |
+                                              +---------+---------+
+                                              |  *.opzero.sh      |
+                                              |  Live URLs        |
+                                              +-------------------+
+
+
+  +------------------+    +------------------+    +------------------+
+  |      CodeZ       |    |       UAT        |    |    token-5-0     |
+  | Remote Claude    |    | AI-native test   |    | Context vault    |
+  | Code UI (17 MCP  |    | engine (46 MCP   |    | plugin (6 MCP    |
+  | tools, mobile)   |    | tools, Playwright|    | tools, SQLite)   |
+  +---------+--------+    +--------+---------+    +--------+---------+
+            |                      |                       |
+            +----------------------+-----------------------+
                                    |
-                    +--------------+--------------+
-                    |              |              |
-               +---------+  +---------+  +------------+
-               |  Skills |  |   MCP   |  |    CLI     |
-               | (SKILL  |  | Server  |  |  opzero    |
-               |   .md)  |  | 26 tools|  |  deploy    |
-               +---------+  +----+----+  +-----+------+
-                    |             |              |
-                    +-------------+--------------+
-                                  |
-                          +-------+-------+
-                          |   @opzero/    |
-                          |     core      |
-                          | (API client)  |
-                          +-------+-------+
-                                  |
-                          +-------+-------+
-                          |   OpZero.sh   |
-                          |   Platform    |
-                          | Next.js + API |
-                          +-------+-------+
-                                  |
-              +-------------------+-------------------+
-              |                   |                   |
-     +--------+-------+  +-------+--------+  +-------+--------+
-     | Cloudflare     |  |    Vercel      |  |    Netlify     |
-     |   Pages        |  |                |  |                |
-     +----------------+  +----------------+  +----------------+
-              |                   |                   |
-              +-------------------+-------------------+
-                                  |
-                        +---------+---------+
-                        |  *.opzero.sh      |
-                        |  Live URLs        |
-                        +-------------------+
-```
-
-### Auth Layer
-
-```
-+-----------------+       +-----------------------+
-|   MCPAuthKit    |       |  mcp-authkit-vercel   |
-| CF Workers + D1 |       | Vercel Edge + Turso   |
-|   OAuth 2.1     |       |     OAuth 2.1         |
-| RFC 9728/8414   |       |   RFC 9728/8414       |
-+-----------------+       +-----------------------+
-        |                           |
-        +----------+  +------------+
-                   |  |
-            +------+--+------+
-            |  MCP Clients   |
-            | (Claude, etc.) |
-            +-----------------+
-```
-
-### Data & Infrastructure
-
-```
-+-------------+     +-------------+     +-----------+
-|  @opzero/db |---->|    Neon      |     |   Infra   |
-|   Drizzle   |     |  PostgreSQL  |     | Workspace |
-|   Schema    |     | (Serverless) |     |  Control  |
-+-------------+     +-------------+     |   Plane   |
-                                        +-----------+
+                        +----------+----------+
+                        |    @opzero/db       |
+                        |  Drizzle + Neon     |
+                        |  (shared schema)    |
+                        +----------+----------+
+                                   |
+                        +----------+----------+
+                        |      Infra          |
+                        |  Control plane,     |
+                        |  IaC, secrets,      |
+                        |  agent orchestration|
+                        +---------------------+
 ```
 
 ---
@@ -97,7 +103,7 @@ Build with Claude, ChatGPT, Cursor, Codex, or any AI agent. OpZero deploys your 
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Self-hosted web UI for Claude Code. Mobile-first, no API key required. | [Details](#codez) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
 | **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
-| **OpZero.sh** `private` | The platform. Next.js 16, React 19, Drizzle, Neon, Stripe, Vercel. | [Details](#opzerosh) |
+| **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
 | **backend** `private` | `@opzero/db` — shared Drizzle schema, multi-provider abstraction, migrations. | [Details](#backend) |
 | **mcp-authkit-vercel** `private` | MCPAuthKit variant for Vercel Edge Functions + Turso. | [Details](#mcp-authkit-vercel) |
 | **Infra** `private` | Workspace control plane, IaC (OpenTofu), dev containers, agent orchestration. | [Details](#infra) |
@@ -234,9 +240,11 @@ Claude Code plugin that patrols your context window. When a tool call returns an
 
 ### OpZero.sh
 
-`private` — The platform that powers everything.
+`private` — **[opzero.sh](https://opzero.sh)** — Your AI builds it. We put it on the internet.
 
-AI-native deployment platform. Deploy static sites and React apps to Cloudflare Pages, Vercel, or Netlify from any MCP client, CLI, or the web dashboard. Next.js 16, React 19, Tailwind 4, Drizzle ORM, Neon PostgreSQL, Stripe billing, Vercel hosting. Subdomain routing at `*.opzero.sh` via Vercel middleware.
+The deployment platform at the center of the OpZ ecosystem. Agents, MCP clients, the CLI, and the web dashboard all converge here to ship static sites and React apps to Cloudflare Pages, Vercel, or Netlify. Deployed sites get live URLs at `*.opzero.sh`.
+
+Next.js 16, React 19, Tailwind 4, Drizzle ORM, Neon PostgreSQL, Stripe billing, Vercel hosting. The CLI, MCP server, and skills all talk to its API via `@opzero/core`.
 
 ### backend
 
