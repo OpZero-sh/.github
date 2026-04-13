@@ -120,6 +120,7 @@ The pattern:
 | **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
+| **CodeZ Hub** `coming soon` | Multi-machine Claude Code hub on Cloudflare Edge. Route sessions across devices and cloud containers. | [Details](#codez-hub) |
 | **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
 | **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
@@ -239,6 +240,73 @@ CodeZ solves this by exposing Claude Code sessions as an MCP server. Any MCP cli
 The web UI is a parallel surface — mobile-first PWA with voice input, subagent team grid, session search, and real-time streaming — but the MCP server is the primitive. Anything that speaks MCP can orchestrate Claude Code through CodeZ.
 
 Self-hosted. Runs on your machine, tunneled through Cloudflare. No API key required — uses your Claude Max subscription via OAuth. Nothing phones home.
+
+### CodeZ Hub
+
+`coming soon` — Multi-machine Claude Code hub on Cloudflare Edge.
+
+CodeZ runs on one machine. CodeZ Hub is the next layer — a Cloudflare Workers Agent that federates CodeZ instances across multiple machines and on-demand cloud containers behind a single MCP endpoint.
+
+```
+            MCP Clients
+            ┌──────────┬──────────┬──────────┐
+            │Claude.ai │Claude CLI│ Mobile   │
+            └────┬─────┴────┬─────┴────┬─────┘
+                 │  HTTP/SSE │          │
+                 └───────────┼──────────┘
+                             │
+╔════════════════════════════╧═════════════════════════════╗
+║  Cloudflare Edge                                        ║
+║                                                         ║
+║  ┌─────────────────────────────────────────────────┐    ║
+║  │  Worker Entry (codez.open0p.com/mcp)            │    ║
+║  └──────────────────────┬──────────────────────────┘    ║
+║                         │                               ║
+║  ┌──────────────────────▼──────────────────────────┐    ║
+║  │  CodeZero Hub  (extends Agent)                  │    ║
+║  │                                                 │    ║
+║  │  ┌─────────────┐ ┌──────────┐ ┌─────────────┐  │    ║
+║  │  │ MCP Server  │ │ SQLite   │ │ State Sync  │  │    ║
+║  │  │ (native)    │ │ machines │ │ to clients  │  │    ║
+║  │  │             │ │ sessions │ │             │  │    ║
+║  │  │ @callable() │ │ routing  │ │             │  │    ║
+║  │  └──────┬──────┘ └──────────┘ └─────────────┘  │    ║
+║  │         │                                       │    ║
+║  │  ┌──────▼──────────────────────────────────┐    │    ║
+║  │  │ WebSocket Manager                       │    │    ║
+║  │  │  resolve(slug) → machineId → connection │    │    ║
+║  │  └──┬──────────────┬───────────────────┬───┘    │    ║
+║  └─────┼──────────────┼───────────────────┼────────┘    ║
+║        │              │                   │             ║
+║  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────────▼─────────┐  ║
+║  │AgentWork- │  │AgentWork- │  │  Cloud Containers  │  ║
+║  │flow       │  │flow       │  │                    │  ║
+║  │           │  │           │  │ ┌────────────────┐ │  ║
+║  │ prompt    │  │ prompt    │  │ │Node+Claude Code│ │  ║
+║  │ ↓        │  │ ↓        │  │ │(on-demand)     │ │  ║
+║  │ permission│  │ permission│  │ └────────────────┘ │  ║
+║  │ gate      │  │ gate      │  │ ┌────────────────┐ │  ║
+║  │ ↓        │  │ ↓        │  │ │Node+Claude Code│ │  ║
+║  │ checkpoint│  │ checkpoint│  │ │(on-demand)     │ │  ║
+║  └─────┬─────┘  └─────┬─────┘  └─────────────────┘  ║
+║        │              │              ▲               ║
+╚════════╪══════════════╪══════════════╪═══════════════╝
+         │ WS           │ WS           │ fetch
+         │ (outward)    │ (outward)    │
+    ┌────▼────┐    ┌────▼────┐        Infra
+    │ codez   │    │ codez   │        project
+    │ agent   │    │ agent   │        provisions
+    │         │    │         │        these
+    │ Claude  │    │ Claude  │
+    │ Code    │    │ Code    │
+    │ procs   │    │ procs   │
+    ├─────────┤    ├─────────┤
+    │ MacBook │    │ Work PC │
+    │ (home)  │    │ (office)│
+    └─────────┘    └─────────┘
+```
+
+One MCP endpoint. Any client — Claude.ai, Claude CLI, mobile — connects to the hub. The hub routes sessions to the right machine via WebSocket, manages permission gates and checkpoints as Agent Workflows, and spins up cloud containers for on-demand compute when your local machines are asleep. Authenticated by MCPAuthKit. Built on Cloudflare Agents SDK.
 
 ### uat
 
