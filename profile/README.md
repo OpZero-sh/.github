@@ -121,8 +121,8 @@ The pattern:
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
 | **CodeZ Hub** `coming soon` | Multi-machine operator on Cloudflare Edge. Holds the lines, client picks the target. | [Details](#codez-hub) |
-| **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
-| **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
+| **[OpZ_cli](https://github.com/opzero-sh/OpZ_cli)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
+| **[skillz](https://github.com/opzero-sh/skillz)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
 | **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
 | **backend** `private` | `@opzero/db` — shared Drizzle schema, multi-provider abstraction, migrations. | [Details](#backend) |
@@ -131,11 +131,11 @@ The pattern:
 
 ---
 
-### OpZ_CLI
+### OpZ_cli
 
-**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — The local, hands on surface for OpZ.
+**[github.com/opzero-sh/OpZ_cli](https://github.com/opzero-sh/OpZ_cli)** — The local, hands on surface for OpZ.
 
-OpZero.sh is the hosted platform. OpZ_CLI is the local counterpart — a terminal CLI with all the OpZero tools, plus a local MCP server designed to be used directly with Claude Code. Where the hosted MCP server (`@opzero/mcp` on the platform) serves remote clients, the CLI's MCP server runs on your machine alongside your agent, with no network round-trip and no auth overhead.
+OpZero.sh is the hosted platform. OpZ_cli is the local counterpart — a terminal CLI with all the OpZero tools, plus a local MCP server designed to be used directly with Claude Code. Where the hosted MCP server (`@opzero/mcp` on the platform) serves remote clients, the CLI's MCP server runs on your machine alongside your agent, with no network round-trip and no auth overhead.
 
 | Package | npm | What it does |
 |---------|-----|-------------|
@@ -148,9 +148,9 @@ npx opzero deploy ./dist             # deploy from terminal
 curl -fsSL https://opzero.sh/install-mcp.sh | bash   # add to Claude Code
 ```
 
-### skillZ
+### skillz
 
-**[github.com/opzero-sh/skillZ](https://github.com/opzero-sh/skillZ)** — Official agent skills for 20+ AI agents.
+**[github.com/opzero-sh/skillz](https://github.com/opzero-sh/skillz)** — Official agent skills for 20+ AI agents.
 
 Declarative SKILL.md playbooks that any compatible agent can follow. No SDK, no runtime — just markdown with YAML frontmatter.
 
@@ -163,7 +163,7 @@ Declarative SKILL.md playbooks that any compatible agent can follow. No SDK, no 
 | `static-site-best-practices` | Static site optimization |
 
 ```bash
-npx skills add opzero-sh/skillZ
+npx skills add opzero-sh/skillz
 ```
 
 ### MCPAuthKit
@@ -385,7 +385,7 @@ curl -fsSL https://opzero.sh/install-mcp.sh | bash
 ### Add agent skills
 
 ```bash
-npx skills add opzero-sh/skillZ
+npx skills add opzero-sh/skillz
 ```
 
 ---
@@ -410,5 +410,5 @@ npx skills add opzero-sh/skillZ
 - **Website:** [opzero.sh](https://opzero.sh)
 - **CLI:** [npm/opzero](https://www.npmjs.com/package/opzero)
 - **MCP Server:** [npm/@opzero/mcp](https://www.npmjs.com/package/@opzero/mcp)
-- **Skills:** `npx skills add opzero-sh/skillZ`
+- **Skills:** `npx skills add opzero-sh/skillz`
 - **AuthKit:** [authkit.open0p.com](https://authkit.open0p.com)
