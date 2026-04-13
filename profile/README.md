@@ -10,7 +10,23 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 [![npm](https://img.shields.io/npm/v/opzero?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/opzero)
 [![MCP](https://img.shields.io/npm/v/@opzero/mcp?style=for-the-badge&label=MCP&logo=npm&logoColor=white)](https://www.npmjs.com/package/@opzero/mcp)
 
-### What OpZ solves
+---
+
+## Repositories
+
+| Repo | Problem | Solution | |
+|------|---------|----------|---|
+| **[OpZero.sh](https://opzero.sh)** `private` | Agent writes code, human copies it to a host | Agentic deployment platform — ship to Cloudflare/Vercel/Netlify via MCP or CLI | [Details](#opzerosh) |
+| **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | Every MCP server re-implements OAuth from scratch | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
+| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Claude Code runs in terminal, browser, mobile — separate unobservable islands | Unified surface + Claude chat as the orchestration & observability layer for Claude Code agents | [Details](#codez) |
+| **CodeZ Hub** `coming soon` | CodeZ runs on one machine, no way to federate | Multi-machine operator on Cloudflare Edge. Holds the lines, client picks the target. | [Details](#codez-hub) |
+| **[OpZ_cli](https://github.com/opzero-sh/OpZ_cli)** | No local tooling for agents to deploy and manage | Terminal CLI + local MCP server for Claude Code | [Details](#opz_cli) |
+| **[skillz](https://github.com/opzero-sh/skillz)** | Agents lack reusable deployment playbooks | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents | [Details](#skillz) |
+| **[uat](https://github.com/opzero-sh/uat)** | Manual QA or fragile test scripts | AI-native test engine: 46 MCP tools for browser, API, and MCP testing | [Details](#uat) |
+| **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Agent chokes on large outputs, loses history | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
+| **backend** `private` | Each service defines its own schema | `@opzero/db` — shared Drizzle schema, multi-provider abstraction, migrations | [Details](#backend) |
+| **mcp-authkit-vercel** `private` | MCPAuthKit only runs on Cloudflare | MCPAuthKit variant for Vercel Edge Functions + Turso | [Details](#mcp-authkit-vercel) |
+| **Infra** `private` | Each tool is an island, nothing composes | Workspace control plane, IaC (OpenTofu), dev containers, agent orchestration | [Details](#infra) |
 
 ---
 
@@ -101,24 +117,6 @@ The pattern:
                         |  agent orchestration|
                         +---------------------+
 ```
-
----
-
-## Repositories
-
-| Repo | Problem | Solution | |
-|------|---------|----------|---|
-| **[OpZero.sh](https://opzero.sh)** `private` | Agent writes code, human copies it to a host | Agentic deployment platform — ship to Cloudflare/Vercel/Netlify via MCP or CLI | [Details](#opzerosh) |
-| **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | Every MCP server re-implements OAuth from scratch | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
-| **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Claude Code runs in terminal, browser, mobile — separate unobservable islands | Unified surface + Claude chat as the orchestration & observability layer for Claude Code agents | [Details](#codez) |
-| **CodeZ Hub** `coming soon` | CodeZ runs on one machine, no way to federate | Multi-machine operator on Cloudflare Edge. Holds the lines, client picks the target. | [Details](#codez-hub) |
-| **[OpZ_cli](https://github.com/opzero-sh/OpZ_cli)** | No local tooling for agents to deploy and manage | Terminal CLI + local MCP server for Claude Code | [Details](#opz_cli) |
-| **[skillz](https://github.com/opzero-sh/skillz)** | Agents lack reusable deployment playbooks | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents | [Details](#skillz) |
-| **[uat](https://github.com/opzero-sh/uat)** | Manual QA or fragile test scripts | AI-native test engine: 46 MCP tools for browser, API, and MCP testing | [Details](#uat) |
-| **[token-5-0](https://github.com/opzero-sh/token-5-0)** | Agent chokes on large outputs, loses history | Context window police. Vaults oversized outputs, keeps compact summaries. | [Details](#token-5-0) |
-| **backend** `private` | Each service defines its own schema | `@opzero/db` — shared Drizzle schema, multi-provider abstraction, migrations | [Details](#backend) |
-| **mcp-authkit-vercel** `private` | MCPAuthKit only runs on Cloudflare | MCPAuthKit variant for Vercel Edge Functions + Turso | [Details](#mcp-authkit-vercel) |
-| **Infra** `private` | Each tool is an island, nothing composes | Workspace control plane, IaC (OpenTofu), dev containers, agent orchestration | [Details](#infra) |
 
 ---
 
