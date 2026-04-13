@@ -16,7 +16,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 |-----------|-------------|----------|
 | **Deployment** | Agent writes code, human copies it to a host | Agent deploys to Cloudflare/Vercel/Netlify via MCP or CLI |
 | **Auth** | Every MCP server re-implements OAuth from scratch | MCPAuthKit: one Worker, full spec, five minutes |
-| **Orchestration** | Claude Code runs in terminal, browser, mobile — but they're separate unobservable islands | CodeZ: unified surface + Claude chat as the orchestration and observability layer for Claude Code agents |
+| **Orchestration & Observability** | Claude Code runs in terminal, browser, mobile — but they're separate unobservable islands | CodeZ: unified surface + Claude chat as the orchestration and observability layer for Claude Code agents |
 | **Testing** | Manual QA or fragile test scripts | UAT: 46 MCP tools, agents write and run acceptance tests |
 | **Context limits** | Agent chokes on large outputs, loses history | token-5-0: vaults payloads, keeps summaries on the beat |
 | **Operability** | Each tool is an island, nothing composes | Shared data layer, shared auth, shared MCP protocol end-to-end |
