@@ -120,7 +120,7 @@ The pattern:
 | **OpZero.sh** `private` | Agentic deployment platform. Ship to Cloudflare, Vercel, or Netlify from any AI agent. | [Details](#opzerosh) |
 | **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers. One Cloudflare Worker. Five minutes. | [Details](#mcpauthkit) |
 | **[CodeZ](https://github.com/opzero-sh/CodeZ)** | Unified Claude Code surface. Claude chat orchestrates Claude Code agents via MCP. | [Details](#codez) |
-| **CodeZ Hub** `coming soon` | Multi-machine Claude Code hub on Cloudflare Edge. Route sessions across devices and cloud containers. | [Details](#codez-hub) |
+| **CodeZ Hub** `coming soon` | Multi-machine connection broker. Phone book, not router — client picks the target. | [Details](#codez-hub) |
 | **[OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** | Terminal CLI + local MCP server for Claude Code. The local counterpart to the hosted platform. | [Details](#opz_cli) |
 | **[skillZ](https://github.com/opzero-sh/skillZ)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. | [Details](#skillz) |
 | **[uat](https://github.com/opzero-sh/uat)** | AI-native test engine: 46 MCP tools for browser, API, and MCP testing. | [Details](#uat) |
@@ -243,9 +243,23 @@ Self-hosted. Runs on your machine, tunneled through Cloudflare. No API key requi
 
 ### CodeZ Hub
 
-`coming soon` — Multi-machine Claude Code hub on Cloudflare Edge.
+`coming soon` — Multi-machine connection broker on Cloudflare Edge.
 
-CodeZ runs on one machine. CodeZ Hub is the next layer — a Cloudflare Workers Agent that federates CodeZ instances across multiple machines and on-demand cloud containers behind a single MCP endpoint.
+CodeZ runs on one machine. CodeZ Hub federates CodeZ instances across machines and cloud containers behind a single MCP endpoint — but it's a **phone book, not a router**. The Hub doesn't decide where work goes. It tells the client what's available, and the client makes the call.
+
+This is deliberate. The intelligence sits in the client — Claude.ai with your full context, or a script you write. You know which machine has the repo checked out, which one has the VPN connected, which one is on battery. A "smart" hub would just get in the way.
+
+**The protocol:**
+
+```
+1. list_machines()                        → what's online, what repos, what specs
+2. get_machine(machineId)                 → detailed status, active sessions
+3. create_session(machineId, slug, ...)   → client picks the target
+4. send_prompt(sessionId, ...)            → relayed via machineId on the session
+5. poll_events(sessionId)                 → streamed back through hub
+```
+
+The client — you, or Claude acting as your orchestrator — picks the machine based on what it knows about the task. Heavy token generation goes to the beefy box. Quick linting goes to whatever's online. Cloud containers for throwaway experiments. Multi-machine coordination becomes natural: run tests on the work PC while Claude Code refactors on the home Mac, aggregate results in one stream.
 
 ```
             MCP Clients
@@ -263,50 +277,48 @@ CodeZ runs on one machine. CodeZ Hub is the next layer — a Cloudflare Workers 
 ║  └──────────────────────┬──────────────────────────┘    ║
 ║                         │                               ║
 ║  ┌──────────────────────▼──────────────────────────┐    ║
-║  │  CodeZero Hub  (extends Agent)                  │    ║
+║  │  CodeZ Hub  (extends Agent)                     │    ║
 ║  │                                                 │    ║
 ║  │  ┌─────────────┐ ┌──────────┐ ┌─────────────┐  │    ║
-║  │  │ MCP Server  │ │ SQLite   │ │ State Sync  │  │    ║
-║  │  │ (native)    │ │ machines │ │ to clients  │  │    ║
-║  │  │             │ │ sessions │ │             │  │    ║
-║  │  │ @callable() │ │ routing  │ │             │  │    ║
+║  │  │ MCP Server  │ │ SQLite   │ │ Event Mux   │  │    ║
+║  │  │ (native)    │ │ machine  │ │ aggregate   │  │    ║
+║  │  │             │ │ registry │ │ SSE from N  │  │    ║
+║  │  │ @callable() │ │ session  │ │ machines    │  │    ║
+║  │  │             │ │ index    │ │ into 1      │  │    ║
 ║  │  └──────┬──────┘ └──────────┘ └─────────────┘  │    ║
 ║  │         │                                       │    ║
 ║  │  ┌──────▼──────────────────────────────────┐    │    ║
-║  │  │ WebSocket Manager                       │    │    ║
-║  │  │  resolve(slug) → machineId → connection │    │    ║
+║  │  │ WebSocket Broker                        │    │    ║
+║  │  │  relay messages, don't transform them   │    │    ║
 ║  │  └──┬──────────────┬───────────────────┬───┘    │    ║
 ║  └─────┼──────────────┼───────────────────┼────────┘    ║
 ║        │              │                   │             ║
-║  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────────▼─────────┐  ║
-║  │AgentWork- │  │AgentWork- │  │  Cloud Containers  │  ║
-║  │flow       │  │flow       │  │                    │  ║
-║  │           │  │           │  │ ┌────────────────┐ │  ║
-║  │ prompt    │  │ prompt    │  │ │Node+Claude Code│ │  ║
-║  │ ↓        │  │ ↓        │  │ │(on-demand)     │ │  ║
-║  │ permission│  │ permission│  │ └────────────────┘ │  ║
-║  │ gate      │  │ gate      │  │ ┌────────────────┐ │  ║
-║  │ ↓        │  │ ↓        │  │ │Node+Claude Code│ │  ║
-║  │ checkpoint│  │ checkpoint│  │ │(on-demand)     │ │  ║
-║  └─────┬─────┘  └─────┬─────┘  └─────────────────┘  ║
-║        │              │              ▲               ║
-╚════════╪══════════════╪══════════════╪═══════════════╝
-         │ WS           │ WS           │ fetch
-         │ (outward)    │ (outward)    │
-    ┌────▼────┐    ┌────▼────┐        Infra
-    │ codez   │    │ codez   │        project
-    │ agent   │    │ agent   │        provisions
-    │         │    │         │        these
-    │ Claude  │    │ Claude  │
-    │ Code    │    │ Code    │
-    │ procs   │    │ procs   │
-    ├─────────┤    ├─────────┤
-    │ MacBook │    │ Work PC │
-    │ (home)  │    │ (office)│
+╚════════╪══════════════╪══════════════════╪═══════════════╝
+         │ WS           │ WS              │ fetch
+         │              │                 │
+    ┌────▼────┐    ┌────▼────┐    ┌───────▼───────┐
+    │ codez   │    │ codez   │    │    Cloud      │
+    │ agent   │    │ agent   │    │  Containers   │
+    │         │    │         │    │  (on-demand)  │
+    │ Claude  │    │ Claude  │    │  Claude Code  │
+    │ Code    │    │ Code    │    │  procs        │
+    ├─────────┤    ├─────────┤    └───────────────┘
+    │ MacBook │    │ Work PC │          ▲
+    │ (home)  │    │ (office)│      Infra provisions
     └─────────┘    └─────────┘
 ```
 
-One MCP endpoint. Any client — Claude.ai, Claude CLI, mobile — connects to the hub. The hub routes sessions to the right machine via WebSocket, manages permission gates and checkpoints as Agent Workflows, and spins up cloud containers for on-demand compute when your local machines are asleep. Authenticated by MCPAuthKit. Built on Cloudflare Agents SDK.
+**The Hub's jobs — and nothing else:**
+
+| Responsibility | What it does |
+|---------------|-------------|
+| Machine registry | Who's online, what repos they serve, their specs |
+| Connection brokering | Hold the WebSockets, relay messages untransformed |
+| Session index | Which sessions exist, on which machines |
+| Event aggregation | Multiplex SSE from N machines into one client stream |
+| Auth | MCPAuthKit — is this client allowed to talk to this machine |
+
+It doesn't route, doesn't decide, doesn't transform. Clean relay with a phone book. Built on Cloudflare Agents SDK.
 
 ### uat
 
