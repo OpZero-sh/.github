@@ -23,6 +23,24 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 ---
 
+## Philosophy
+
+**Solve each problem once, well, and level up.**
+
+MCP auth was a mess — every server reimplemented OAuth from scratch. So we solved it once: MCPAuthKit. ~600 lines, full spec, deploy in five minutes. Then we moved on.
+
+That solution became the auth layer for CodeZ, which solved the next problem: Claude Code sessions are islands. Now Claude chat orchestrates Claude Code agents through MCP, authenticated by the thing we already built.
+
+Every repo in this org exists because we hit a wall, solved it properly, and used that solution as the foundation for the next layer. Nothing is half-finished. Nothing is a demo. Each piece runs in production, works standalone, and composes with everything else.
+
+The pattern:
+1. **Hit a real problem** — not a hypothetical one
+2. **Solve it completely** — implement the full spec, not 80%
+3. **Ship it as infrastructure** — standalone, reusable, no vendor lock-in
+4. **Build the next layer on top** — each solution unlocks the one above it
+
+---
+
 ## Architecture
 
 ```
