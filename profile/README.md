@@ -112,7 +112,7 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 ### OpZ_CLI
 
-**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — The local MCP surface for OpZ.
+**[github.com/opzero-sh/OpZ_CLI](https://github.com/opzero-sh/OpZ_CLI)** — The local, hands on surface for OpZ.
 
 OpZero.sh is the hosted platform. OpZ_CLI is the local counterpart — a terminal CLI with all the OpZero tools, plus a local MCP server designed to be used directly with Claude Code. Where the hosted MCP server (`@opzero/mcp` on the platform) serves remote clients, the CLI's MCP server runs on your machine alongside your agent, with no network round-trip and no auth overhead.
 
