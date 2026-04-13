@@ -97,12 +97,42 @@ Build with Claude, ChatGPT, Cursor, Codex, or any AI agent. OpZero deploys your 
 | **[skills](https://github.com/opzero-sh/skills)** | Declarative agent skills for Claude Code, Cursor, Windsurf, and 20+ AI agents. Deploy to any cloud with one command. |
 | **OpZero.sh** `private` | The platform. Next.js 16, React 19, Tailwind 4, Drizzle ORM, Neon PostgreSQL, Stripe billing, Vercel hosting. |
 
-### Auth
+### Auth — [MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)
 
-| Repo | Description |
-|------|-------------|
-| **[MCPAuthKit](https://github.com/opzero-sh/MCPAuthKit)** | OAuth 2.1 for MCP servers on Cloudflare Workers + D1. RFC 9728, 8414, 7591, PKCE, dynamic client registration. Deploy in 5 minutes. |
-| **mcp-authkit-vercel** `private` | Same OAuth 2.1 spec, built for Vercel Edge Functions + Turso. |
+Every MCP server builder hits the same wall: the OAuth spec is brutal. MCPAuthKit is the other side of that wall.
+
+A single Cloudflare Worker (~600 lines) + D1 database that handles the **entire** MCP OAuth specification — discovery, registration, consent, tokens — so your MCP server doesn't have to. Your server's only job: validate the Bearer token.
+
+```
+Claude / ChatGPT              MCPAuthKit              Your MCP Server
+     |                            |                        |
+     |  POST /mcp (no token)      |                        |
+     |-------------------------------------------------------->|
+     |  401 + WWW-Authenticate    |                        |
+     |<--------------------------------------------------------|
+     |                            |                        |
+     |  Discovery + Registration  |                        |
+     |--------------------------->|                        |
+     |  Consent + PKCE exchange   |                        |
+     |--------------------------->|                        |
+     |  { access_token }          |                        |
+     |<---------------------------|                        |
+     |                            |                        |
+     |  POST /mcp (Bearer token)  |                        |
+     |-------------------------------------------------------->|
+     |  [tools response]          |                        |
+     |<--------------------------------------------------------|
+```
+
+| Spec | Status |
+|------|--------|
+| RFC 9728 — Protected Resource Metadata | Complete |
+| RFC 8414 — Authorization Server Metadata | Complete |
+| RFC 7591 — Dynamic Client Registration | Complete |
+| OAuth 2.1 — Authorization code + PKCE (S256) | Complete |
+| Token refresh, revocation, consent UI, multi-tenant | Complete |
+
+Running in production at [authkit.open0p.com](https://authkit.open0p.com). Also available as a Vercel Edge variant (`mcp-authkit-vercel` `private`).
 
 ### Agent Tooling
 
