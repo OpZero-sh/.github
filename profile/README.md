@@ -36,15 +36,19 @@ AI agents can write code. What they can't do — yet — is ship it, authenticat
 
 MCP auth was a mess — every server reimplemented OAuth from scratch. So we solved it once: MCPAuthKit. ~600 lines, full spec, deploy in five minutes. Then we moved on.
 
-That solution became the auth layer for CodeZ, which solved the next problem: Claude Code sessions are islands. Now Claude chat orchestrates Claude Code agents through MCP, authenticated by the thing we already built.
+That solution became the auth layer for CodeZ, which solved the next problem: Claude Code sessions are islands. CodeZ made them observable, controllable, and orchestratable from any device. It was built in two days because auth was already a solved layer underneath it.
 
-Every repo in this org exists because we hit a wall, solved it, and used that solution as the foundation for the next layer. Nothing is half-finished. Nothing is a demo. Each piece runs in production, works standalone, and composes with everything else.
+CodeZ solved single-machine orchestration, which exposed the next problem: one machine isn't enough. The Operator went from spec to a live MCP server with 9 tools in a single evening — because session management, WebSocket transport, and auth were already infrastructure it could stand on.
 
-The payoff is compounding speed. CodeZ is the most sophisticated thing in this org — a self-hosted web UI with 17 MCP tools, real-time streaming, mobile PWA, agent orchestration — and it was the fastest to build. It was dogfooding itself from an iPhone's Safari within the first hour. That hour was the only stretch the machine that built it was physically touched. Within 24 hours, Claude Code agents were being orchestrated from Claude iOS chat. That's what happens when auth, deploy, testing, and infra are already solved layers you can stand on.
+This is the pattern, and the speed is the proof that it's working:
+
+MCPAuthKit: a week. CodeZ: two days. Operator: one evening. Each layer ships faster than the last because it's building on everything below it.
+
+Every repo in this org exists because we hit a wall, solved it properly, and used that solution as the foundation for the next layer. Nothing is half-finished. Nothing is a demo. Each piece runs in production, works standalone, and composes with everything else.
 
 The pattern:
 1. **Hit a real problem** — not a hypothetical one
-2. **Solve it completely** — deploy
+2. **Solve it completely** — implement the full spec, not 80%
 3. **Ship it as infrastructure** — standalone, reusable, no vendor lock-in
 4. **Build the next layer on top** — each solution unlocks the one above it, and the next thing ships faster than the last
 
