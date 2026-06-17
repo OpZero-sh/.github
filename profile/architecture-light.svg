@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 630" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9aa0a6"/>
+    </marker>
+  </defs>
+
+  <rect x="8" y="8" width="964" height="614" rx="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Clients -->
+  <text x="36" y="40" font-size="12" font-weight="700" letter-spacing="0.5" fill="#6b7280">AI AGENTS / MCP CLIENTS · connect directly to the hub today</text>
+
+  <g font-size="11">
+    <rect x="36"  y="52" width="170" height="46" rx="8" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="121" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Claude</text>
+    <text x="121" y="90" text-anchor="middle" fill="#6b7280">chat + Code</text>
+
+    <rect x="220" y="52" width="170" height="46" rx="8" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="305" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">ChatGPT</text>
+    <text x="305" y="90" text-anchor="middle" fill="#6b7280">connects today</text>
+
+    <rect x="404" y="52" width="170" height="46" rx="8" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="489" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Cursor · Copilot</text>
+    <text x="489" y="90" text-anchor="middle" fill="#6b7280">IDE agents</text>
+
+    <rect x="588" y="52" width="170" height="46" rx="8" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="673" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">any MCP client</text>
+    <text x="673" y="90" text-anchor="middle" fill="#6b7280">web · mobile · CI</text>
+
+    <rect x="772" y="52" width="170" height="46" rx="8" fill="#f4f4f5" stroke="#d4d4d8"/>
+    <text x="857" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">opzero CLI</text>
+    <text x="857" y="90" text-anchor="middle" fill="#6b7280">+ local MCP</text>
+  </g>
+
+  <line x1="490" y1="98" x2="490" y2="120" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Auth -->
+  <rect x="36" y="122" width="908" height="52" rx="10" fill="#fef9ec" stroke="#d9b84a"/>
+  <text x="490" y="147" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">MCPAuthKit — OAuth 2.1 · auth.opzero.sh</text>
+  <text x="490" y="164" text-anchor="middle" font-size="11" fill="#6b7280">one login · one token family · validate a Bearer token</text>
+
+  <line x1="490" y1="174" x2="490" y2="196" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Hub -->
+  <rect x="310" y="198" width="360" height="52" rx="10" fill="#e0f7f7" stroke="#5ec5c5"/>
+  <text x="490" y="223" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">hub.opzero.sh/mcp</text>
+  <text x="490" y="240" text-anchor="middle" font-size="11" fill="#6b7280">the hub's single MCP endpoint</text>
+
+  <!-- fan to core layers -->
+  <path d="M490 250 C 320 268, 200 274, 179 290" fill="none" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="490" y1="250" x2="490" y2="290" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M490 250 C 660 268, 780 274, 801 290" fill="none" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Core layers -->
+  <text x="36" y="284" font-size="12" font-weight="700" letter-spacing="0.5" fill="#6b7280">CORE LAYERS</text>
+
+  <rect x="36" y="292" width="286" height="66" rx="10" fill="#e8f0fe" stroke="#6f9eea"/>
+  <text x="179" y="318" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">CodeZ Hub</text>
+  <text x="179" y="335" text-anchor="middle" font-size="11" fill="#6b7280">per-user Durable Object · 10 tools</text>
+  <text x="179" y="350" text-anchor="middle" font-size="11" fill="#6b7280">operator, not router</text>
+
+  <rect x="347" y="292" width="286" height="66" rx="10" fill="#e6f7ee" stroke="#4fb985"/>
+  <text x="490" y="318" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">CodeZ</text>
+  <text x="490" y="335" text-anchor="middle" font-size="11" fill="#6b7280">~18 MCP tools, on a machine</text>
+  <text x="490" y="350" text-anchor="middle" font-size="11" fill="#6b7280">makes an agent observable + drivable</text>
+
+  <rect x="658" y="292" width="286" height="66" rx="10" fill="#f2eafd" stroke="#a779e0"/>
+  <text x="801" y="318" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">Deploy · OpZero.sh</text>
+  <text x="801" y="335" text-anchor="middle" font-size="11" fill="#6b7280">36 MCP tools</text>
+  <text x="801" y="350" text-anchor="middle" font-size="11" fill="#6b7280">sites · apps · MCP servers</text>
+
+  <!-- connectors to machines / deploy targets -->
+  <line x1="263" y1="358" x2="263" y2="394" stroke="#9aa0a6" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="801" y1="358" x2="801" y2="394" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+
+  <text x="36" y="388" font-size="12" font-weight="700" letter-spacing="0.5" fill="#6b7280">YOUR MACHINES · each runs the agent sessions the hub drives</text>
+  <text x="660" y="388" font-size="12" font-weight="700" letter-spacing="0.5" fill="#6b7280">DEPLOY TARGETS</text>
+
+  <!-- Machines -->
+  <g>
+    <rect x="36" y="396" width="180" height="150" rx="10" fill="#fafafa" stroke="#d4d4d8"/>
+    <text x="126" y="420" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">MacBook</text>
+    <text x="126" y="436" text-anchor="middle" font-size="10.5" fill="#6b7280">CodeZ · agent sessions</text>
+
+    <rect x="240" y="396" width="180" height="150" rx="10" fill="#fafafa" stroke="#d4d4d8"/>
+    <text x="330" y="420" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">Work PC</text>
+    <text x="330" y="436" text-anchor="middle" font-size="10.5" fill="#6b7280">CodeZ · agent sessions</text>
+
+    <rect x="444" y="396" width="180" height="150" rx="10" fill="#fafafa" stroke="#d4d4d8"/>
+    <text x="534" y="420" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">Cloud container</text>
+    <text x="534" y="436" text-anchor="middle" font-size="10.5" fill="#6b7280">throwaway runs · Fly.io</text>
+  </g>
+
+  <!-- agent pills -->
+  <g font-size="11.5" font-weight="700">
+    <!-- MacBook -->
+    <rect x="48"  y="448" width="156" height="24" rx="6" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="126" y="464" text-anchor="middle" fill="#1f2937">Claude Code</text>
+    <rect x="48"  y="480" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="126" y="496" text-anchor="middle" fill="#8a6d1a">Codex · soon</text>
+    <rect x="48"  y="512" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="126" y="528" text-anchor="middle" fill="#8a6d1a">Gemini · soon</text>
+    <!-- Work PC -->
+    <rect x="252" y="448" width="156" height="24" rx="6" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="330" y="464" text-anchor="middle" fill="#1f2937">Claude Code</text>
+    <rect x="252" y="480" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="330" y="496" text-anchor="middle" fill="#8a6d1a">Codex · soon</text>
+    <rect x="252" y="512" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="330" y="528" text-anchor="middle" fill="#8a6d1a">Gemini · soon</text>
+    <!-- Cloud -->
+    <rect x="456" y="448" width="156" height="24" rx="6" fill="#eef0fb" stroke="#b9b9e8"/>
+    <text x="534" y="464" text-anchor="middle" fill="#1f2937">Claude Code</text>
+    <rect x="456" y="480" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="534" y="496" text-anchor="middle" fill="#8a6d1a">Codex · soon</text>
+    <rect x="456" y="512" width="156" height="24" rx="6" fill="#fdf7d0" stroke="#e6cf5a"/>
+    <text x="534" y="528" text-anchor="middle" fill="#8a6d1a">Gemini · soon</text>
+  </g>
+
+  <!-- Deploy targets -->
+  <rect x="660" y="396" width="284" height="150" rx="10" fill="#fdeef2" stroke="#e89bb4"/>
+  <text x="802" y="452" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">Cloudflare Pages</text>
+  <text x="802" y="476" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">Vercel · Netlify</text>
+  <text x="802" y="510" text-anchor="middle" font-size="11.5" fill="#6b7280">live at *.opzero.sh</text>
+  <text x="802" y="526" text-anchor="middle" font-size="11.5" fill="#6b7280">+ your custom domains</text>
+
+  <text x="36" y="596" font-size="11" fill="#6b7280">Always-on services (MCPAuthKit, CodeZ Hub) run on Cloudflare Workers · platform + site on Vercel</text>
+</svg>
