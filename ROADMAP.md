@@ -132,3 +132,13 @@ Generalize the session layer so the orchestrator can manage heterogeneous agents
 - **Machine identity:** the hub keys each connection to a per-user Durable Object via the `mat_` token's `user_id` in MCPAuthKit D1. The machine agent and the MCP client **must resolve to the same `user_id`** or the operator sees an empty hub.
 - **Token longevity:** short-lived access tokens that fail to auto-refresh are the main reliability risk for always-on machine agents. The *interim* mitigation is a long-lived directly-minted `mat_` token (used to restore `opz-2.local` on 2026-06-17), but the **target model is MCPAuthKit user login with auto re-login** (see Phase 2 auth section) — direct-mint is being retired for user-owned machines.
 - **Hosting:** site/apex on Vercel (`opzero.sh`); always-on services (MCPAuthKit, codez-hub) stay on Cloudflare Workers, exposed under `*.opzero.sh` via CNAME + CF custom hostnames. `open0p.com` is the legacy host being phased out.
+
+---
+
+## Maintaining this roadmap
+
+This roadmap has **two surfaces that must stay in sync**:
+1. **This file** (`ROADMAP.md`) — the canonical prose.
+2. **Org Project board #2 — "OpZero Platform Roadmap"** (https://github.com/orgs/OpZero-sh/projects/2) — the same items as cards, grouped by Phase.
+
+**Any roadmap change must update both in the same pass.** When a phase, item, or status changes here, add/edit the matching card on the board (mapped to its Phase field); when the board changes, reflect it here. Don't let one lag the other — they drifted apart once and had to be reconciled.
