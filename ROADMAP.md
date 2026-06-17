@@ -5,7 +5,7 @@
 The pieces already exist as standalone layers (see the [org overview](./profile/README.md)). This roadmap is about **unifying them into one product surface** and then **opening it to agents beyond Claude Code**.
 
 > Status legend: ✅ shipped · 🟡 in progress · ⚪ planned
-> Last verified against the running system: **2026-06-17**
+> Last verified against the running system: **2026-06-17** (code-grounded by a per-repo sweep the same day — file/line citations throughout reflect actual repo state)
 
 ---
 
@@ -17,7 +17,7 @@ The pieces already exist as standalone layers (see the [org overview](./profile/
 - 🟡 **CodeZero → CodeZ packaging pipeline.** Intended roles: **CodeZero is the source** (private, where dev happens, what runs on machines); **CodeZ is where the app is packaged and distributed** (public release surface — containers, published builds, docs). They drifted once and were force-synced to the same tip as a one-time cleanup — *that sync is not the model*. Still needed: a defined release/packaging step that flows CodeZero → CodeZ so they stop drifting and never need a manual re-sync again.
 - ✅ **Hub federation MVP is live.** `codez-hub` runs a per-user Durable Object on Cloudflare Edge; machines register over WebSocket, the MCP client lists/drives them, and a **machine picker** now lets a remote client create a session on a chosen machine. **Machine-wake** endpoint + MCP tool just landed.
 - 🟡 **Custom-hostname cutover in flight.** `opzero-router` (catch-all dispatcher) + Cloudflare SaaS custom hostname work is migrating the hub from `code.open0p.com` → **`code.opzero.sh`**.
-- 🟡 **MCPAuthKit rebrand** (`rebrand-authzero` branch) and device-code grant in progress.
+- 🟡 **MCPAuthKit rebrand** (`rebrand-authzero` branch, currently checked out) — "AuthZero" branding already lands on the consent + device-activation screens; **device-code grant is substantially built** (see Phase 2 auth). Refresh-rotation with `family_id` nuclear revoke is shipped.
 
 The gap between "today" and the north star is **consolidation + a real hosted UI + multi-agent support** — the phases below.
 
@@ -41,8 +41,8 @@ The tension: **`opzero.sh` is on Vercel** (`ns1/ns2.vercel-dns.com`, apex + `www
 
 **Approach — do not migrate the Workers off Cloudflare.** Keep the marketing site/apex on Vercel and expose each Worker under an `opzero.sh` subdomain via **CNAME → Cloudflare for SaaS custom hostname**, which is exactly what `code.opzero.sh` already does (it CNAMEs to `code.open0p.com` and is served by `opzero-router`).
 
-- 🟡 `code.opzero.sh` → already CNAME'd to the CF worker (custom hostname live).
-- ⚪ `authkit.opzero.sh` → **repoint to the MCPAuthKit worker** via CNAME + CF custom hostname. *(Currently still resolves to Vercel IPs — it's a placeholder, not the worker.)*
+- 🟡 `code.opzero.sh` → already CNAME'd to the CF worker (custom hostname live). **But** `codez-hub/wrangler.jsonc` still routes only the legacy `code.open0p.com/*` zone, even though README/CLAUDE.md already treat `code.opzero.sh/{mcp,ws,health}` as canonical — finish the worker-side route binding.
+- ⚪ `authkit.opzero.sh` → **repoint to the MCPAuthKit worker** via CNAME + CF custom hostname. *(Currently still resolves to Vercel IPs — it's a placeholder, not the worker.)* The `[env.production]` custom-domain route in `MCPAuthKit/wrangler.toml` is still commented out; the worker runs at `authkit.open0p.com`.
 - ⚪ Add the custom hostnames to Cloudflare for SaaS on the worker side and provision certs (watch the CAA gotcha already documented in the hub RUNBOOK).
 - ⚪ Keep `opzero.sh` / `www.opzero.sh` on Vercel for the site; only service subdomains move to CF.
 - ⚪ Decision to record: **subdomain split** (chosen) vs. path-based `opzero.sh/mcp` (would require Vercel→CF rewrites/proxy on the apex — extra hop, weaker reliability). Subdomains win on reliability and simplicity.
@@ -59,14 +59,14 @@ The hosted UI becomes the operator console.
 - ⚪ Per-machine **session list**: start new, resume idle, abort, fork; mirror read-only sessions owned elsewhere.
 - ⚪ **Wake** sleeping machines from the UI (wire the new machine-wake tool into the front end).
 - ⚪ **Services & health panel** in CodeZero (local WIP exists, stashed `2026-06-17`) — surface hub / MCP / deploy-service status to the operator. Re-land and merge upstream.
-- ⚪ Robust **reconnect / token-refresh** for the machine agent so a machine never silently drops (root cause of the 2026-06 outage: expired token + revoked refresh family, no auto-recovery).
+- ⚪ Robust **reconnect / token-refresh** for the machine agent so a machine never silently drops (root cause of the 2026-06 outage: expired token + revoked refresh family, no auto-recovery). **Pinpointed:** `codez-hub/packages/client/src/agent.ts::scheduleReconnect()` does exponential backoff and calls `onTokenRefresh`, but if refresh returns `null`/throws it just `return`s and **stops reconnecting forever** — the agent must instead surface a re-login prompt and keep retrying.
 
 ### Auth: replace minted machine tokens with MCPAuthKit user login
 
 **Preference:** machines should authenticate by the **user logging in through MCPAuthKit (OAuth)**, not by hand-minted long-lived `mat_` tokens inserted into D1. The direct-mint shortcut is a reliability *stopgap*, not the model — it's opaque, unrevocable per-user, and bypasses consent.
 
-- ⚪ Make the machine-agent **OAuth login the default and reliable path**: detect refresh failure / family revocation and **re-prompt login automatically** instead of silently dropping offline.
-- ⚪ Ship the **device-code grant** (MCPAuthKit `migrations/002_device_codes.sql` is already in flight) so headless machines/containers can complete login without a local browser — removing the very reason direct-mint was used.
+- ⚪ Make the machine-agent **OAuth login the default and reliable path**: detect refresh failure / family revocation and **re-prompt login automatically** instead of silently dropping offline (see the `scheduleReconnect()` give-up bug above).
+- 🟡 **Device-code grant — server side substantially built.** MCPAuthKit `migrations/002_device_codes.sql` is applied (RFC 8628 `device_codes` + per-IP `rate_limits` tables) and the worker exposes `/oauth/device/authorization`, `/device` GET/POST, the `urn:ietf:params:oauth:grant-type:device_code` token grant, and `slow_down` polling. **Remaining gap is the client:** `OpZ_cli`'s `opzero login --browser` still just prints *"Browser OAuth coming soon"* (`auth.ts` models an `oauth` method but it's unimplemented), so headless login can't actually be driven yet.
 - ⚪ One MCPAuthKit consent issues the token family for **both** the UI session and the machine agent under the same `user_id`.
 - ⚪ Migrate the current stopgap: replace the minted `opz-2.local` token (`CODEZ_HUB_TOKEN` in `.env`, expiry 2030) with an OAuth-issued session once the reliable login path lands; then retire direct-mint for user-owned machines.
 
@@ -80,7 +80,8 @@ The hosted UI becomes the operator console.
 
 Fuse the operator surface with the mature deploy MCP so "build" and "ship" are one authenticated session.
 
-- ⚪ Expose the **deploy MCP tools through the same `code.opzero.sh/mcp` connector** (or a federated namespace) so orchestration and deployment share one auth + one session.
+- ⚪ Expose the **deploy MCP tools through the same `code.opzero.sh/mcp` connector** (or a federated namespace) so orchestration and deployment share one auth + one session. *(Source is ~29 tools registered in `OpZero.sh/app/api/mcp/definitions.ts` + `app/api/mcp/tools/`, behind MCPAuthKit OAuth — the mature surface to federate.)*
+- ⚪ **Author orchestration playbooks in `skillz`.** Today skillz has only 5 deploy/setup skills (`deploy-to-opzero`, `multi-cloud-deploy`, `opzero-quick-start`, `static-site-best-practices`, `opzero-mcp-setup`) and **zero orchestration playbooks** — no connect-machine flow, no orchestrate-sessions skill, and no orchestrate→deploy bridge. Build those so the single-conversation flow has skills to lean on.
 - ⚪ Claude on claude.ai acts as **orchestrator**: pair-programs across machines, then calls deploy tools to ship to a chosen provider — no context switch, no second login.
 - ⚪ Thread **provider/target selection** through the session (which machine built it → where it deploys).
 - ⚪ Capture deploy results + live URLs back into the session timeline.
@@ -96,8 +97,8 @@ Generalize the session layer so the orchestrator can manage heterogeneous agents
 - ⚪ Define an **agent-session adapter interface** (spawn, prompt, stream events, permissions, abort) decoupled from Claude Code specifics.
 - ⚪ Ship a **Codex session adapter** as the second implementation.
 - ⚪ Let an orchestrator run a **Claude Code session and a Codex session side-by-side** on the same machine, visible together in the dashboard.
-- ⚪ Normalize the **event/transcript schema** across agents so observability and token-5-0 vaulting work uniformly.
-- ⚪ Extend `codez setup` to detect/configure multiple agent backends.
+- ⚪ Normalize the **event/transcript schema** across agents so observability and token-5-0 vaulting work uniformly. **Consumers are unstarted:** `uat` verification is target-driven only (URLs/APIs/MCP via flow specs) with no concept of which agent/session produced the work; `token-5-0` is an early local `token-vault` MCP (6 tools over SQLite at `~/.token-5-0/vault.db`) with no hub wiring and no `user_id`/cloud scoping. Both need this schema to plug in.
+- ⚪ Extend `codez setup` to detect/configure multiple agent backends. Today `OpZ_cli`'s `opzero setup` only handles `claude-code` (auto-detects the `claude` CLI and wires `~/.claude/settings.json`); add Codex/other backends here.
 
 **Done when:** the machine dashboard shows mixed Claude + Codex sessions and the orchestrator drives both through the same MCP surface.
 
@@ -118,7 +119,7 @@ Generalize the session layer so the orchestrator can manage heterogeneous agents
 |------|-----------------|
 | **codez-hub** | `code.opzero.sh` custom-hostname cutover; agent reconnect/refresh hardening; multi-agent routing |
 | **CodeZero (source)** | Re-land services/health panel; host UI at `code.opzero.sh/`; agent-session adapter interface (Phase 4) |
-| **CodeZ (package/distribute)** | Formalize the CodeZero → CodeZ release/packaging pipeline so the distribution surface tracks source without manual git syncs |
+| **CodeZ (package/distribute)** | Formalize the CodeZero → CodeZ release/packaging pipeline so the distribution surface tracks source without manual git syncs. *(Recent CodeZ history is literally manual "sync from CodeZero" commits; `@opzero/codez-hub-client` is pulled via a `file:../codez-hub/packages/client` link that ties the distro to a sibling checkout — version/pin it. `codez setup` still provisions against legacy `code.open0p.com`.)* |
 | **MCPAuthKit** | Finish `authzero` rebrand + device-code grant; single-consent for UI + `/mcp` |
 | **OpZero.sh (deploy MCP)** | Federate deploy tools into the unified connector (Phase 3) |
 | **OpZ_cli / skillz** | `codez setup` multi-agent detection; deploy + orchestrate playbooks |
