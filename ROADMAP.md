@@ -13,7 +13,8 @@ The pieces already exist as standalone layers (see the [org overview](./profile/
 
 - ✅ **Deploy MCP is the mature core.** `opzero.sh` ships to Cloudflare / Vercel / Netlify via 26 MCP tools or the CLI. This is production and the most battle-tested layer.
 - ✅ **MCPAuthKit is the auth layer.** OAuth 2.1 for MCP on a single Cloudflare Worker (`authkit.open0p.com`), D1-backed access tokens, refresh-token rotation with replay-family revocation. CodeZ, the hub, and the deploy MCP all authenticate through it.
-- ✅ **CodeZ ↔ CodeZero unified as a client package.** The hub client was extracted into `@opzero/codez-hub-client` (`file:` linked from CodeZero), so the public surface (CodeZ) and the running agent (CodeZero) share one transport/agent implementation.
+- ✅ **Shared hub-client package across CodeZero and CodeZ.** The hub client was extracted into `@opzero/codez-hub-client` (`file:` linked from CodeZero), so the source (CodeZero) and the distribution surface (CodeZ) share one transport/agent implementation.
+- 🟡 **CodeZero → CodeZ packaging pipeline.** Intended roles: **CodeZero is the source** (private, where dev happens, what runs on machines); **CodeZ is where the app is packaged and distributed** (public release surface — containers, published builds, docs). They drifted once and were force-synced to the same tip as a one-time cleanup — *that sync is not the model*. Still needed: a defined release/packaging step that flows CodeZero → CodeZ so they stop drifting and never need a manual re-sync again.
 - ✅ **Hub federation MVP is live.** `codez-hub` runs a per-user Durable Object on Cloudflare Edge; machines register over WebSocket, the MCP client lists/drives them, and a **machine picker** now lets a remote client create a session on a chosen machine. **Machine-wake** endpoint + MCP tool just landed.
 - 🟡 **Custom-hostname cutover in flight.** `opzero-router` (catch-all dispatcher) + Cloudflare SaaS custom hostname work is migrating the hub from `code.open0p.com` → **`code.opzero.sh`**.
 - 🟡 **MCPAuthKit rebrand** (`rebrand-authzero` branch) and device-code grant in progress.
@@ -116,7 +117,8 @@ Generalize the session layer so the orchestrator can manage heterogeneous agents
 | Repo | Near-term focus |
 |------|-----------------|
 | **codez-hub** | `code.opzero.sh` custom-hostname cutover; agent reconnect/refresh hardening; multi-agent routing |
-| **CodeZ / CodeZero** | Re-land services/health panel; host UI at `code.opzero.sh/`; agent-session adapter interface (Phase 4) |
+| **CodeZero (source)** | Re-land services/health panel; host UI at `code.opzero.sh/`; agent-session adapter interface (Phase 4) |
+| **CodeZ (package/distribute)** | Formalize the CodeZero → CodeZ release/packaging pipeline so the distribution surface tracks source without manual git syncs |
 | **MCPAuthKit** | Finish `authzero` rebrand + device-code grant; single-consent for UI + `/mcp` |
 | **OpZero.sh (deploy MCP)** | Federate deploy tools into the unified connector (Phase 3) |
 | **OpZ_cli / skillz** | `codez setup` multi-agent detection; deploy + orchestrate playbooks |
