@@ -24,15 +24,29 @@ The gap between "today" and the north star is **consolidation + a real hosted UI
 
 ## Phase 1 — One domain, one login 🟡
 
-Collapse the three entrypoints (CodeZ UI, hub MCP, deploy MCP) onto a single authenticated origin.
+Collapse the three entrypoints (CodeZ UI, hub MCP, deploy MCP) onto a single authenticated origin under **`opzero.sh`** — without sacrificing the reliability that has kept the Cloudflare-hosted services up.
 
 - 🟡 Finish SaaS custom-hostname routing so **`code.opzero.sh`** terminates at `opzero-router` → hub.
 - ⚪ Serve the **CodeZ web UI at `code.opzero.sh/`** and the **hosted MCP connector at `code.opzero.sh/mcp`** from the same origin.
 - ⚪ Make **MCPAuthKit the single OAuth** for both the UI session and the `/mcp` connector (one consent, one token family per user).
-- ⚪ Retire `*.open0p.com` hostnames once `code.opzero.sh` is authoritative; keep redirects.
+- ⚪ Retire `*.open0p.com` hostnames once the `opzero.sh` subdomains are authoritative; keep redirects.
 - ⚪ Publish `code.opzero.sh/mcp` as a **claude.ai custom connector** (hosted MCP entrypoint) end-to-end.
 
 **Done when:** a user adds `code.opzero.sh/mcp` as a connector on claude.ai, logs in via MCPAuthKit, and lands in their own hub DO with zero per-machine token wiring.
+
+### Domain consolidation — hosting split (Vercel apex + Cloudflare subdomains)
+
+The tension: **`opzero.sh` is on Vercel** (`ns1/ns2.vercel-dns.com`, apex + `www` → Vercel), while the reliable, always-on services (MCPAuthKit, codez-hub) are **Cloudflare Workers** under `*.open0p.com`. Cloudflare has been more reliable for these, so the goal is **"everything under `opzero.sh`," not "everything on Vercel."**
+
+**Approach — do not migrate the Workers off Cloudflare.** Keep the marketing site/apex on Vercel and expose each Worker under an `opzero.sh` subdomain via **CNAME → Cloudflare for SaaS custom hostname**, which is exactly what `code.opzero.sh` already does (it CNAMEs to `code.open0p.com` and is served by `opzero-router`).
+
+- 🟡 `code.opzero.sh` → already CNAME'd to the CF worker (custom hostname live).
+- ⚪ `authkit.opzero.sh` → **repoint to the MCPAuthKit worker** via CNAME + CF custom hostname. *(Currently still resolves to Vercel IPs — it's a placeholder, not the worker.)*
+- ⚪ Add the custom hostnames to Cloudflare for SaaS on the worker side and provision certs (watch the CAA gotcha already documented in the hub RUNBOOK).
+- ⚪ Keep `opzero.sh` / `www.opzero.sh` on Vercel for the site; only service subdomains move to CF.
+- ⚪ Decision to record: **subdomain split** (chosen) vs. path-based `opzero.sh/mcp` (would require Vercel→CF rewrites/proxy on the apex — extra hop, weaker reliability). Subdomains win on reliability and simplicity.
+
+**Done when:** `authkit.opzero.sh` and `code.opzero.sh` both serve their Cloudflare Workers, the site stays on Vercel, and nothing depends on `open0p.com`.
 
 ---
 
@@ -45,6 +59,17 @@ The hosted UI becomes the operator console.
 - ⚪ **Wake** sleeping machines from the UI (wire the new machine-wake tool into the front end).
 - ⚪ **Services & health panel** in CodeZero (local WIP exists, stashed `2026-06-17`) — surface hub / MCP / deploy-service status to the operator. Re-land and merge upstream.
 - ⚪ Robust **reconnect / token-refresh** for the machine agent so a machine never silently drops (root cause of the 2026-06 outage: expired token + revoked refresh family, no auto-recovery).
+
+### Auth: replace minted machine tokens with MCPAuthKit user login
+
+**Preference:** machines should authenticate by the **user logging in through MCPAuthKit (OAuth)**, not by hand-minted long-lived `mat_` tokens inserted into D1. The direct-mint shortcut is a reliability *stopgap*, not the model — it's opaque, unrevocable per-user, and bypasses consent.
+
+- ⚪ Make the machine-agent **OAuth login the default and reliable path**: detect refresh failure / family revocation and **re-prompt login automatically** instead of silently dropping offline.
+- ⚪ Ship the **device-code grant** (MCPAuthKit `migrations/002_device_codes.sql` is already in flight) so headless machines/containers can complete login without a local browser — removing the very reason direct-mint was used.
+- ⚪ One MCPAuthKit consent issues the token family for **both** the UI session and the machine agent under the same `user_id`.
+- ⚪ Migrate the current stopgap: replace the minted `opz-2.local` token (`CODEZ_HUB_TOKEN` in `.env`, expiry 2030) with an OAuth-issued session once the reliable login path lands; then retire direct-mint for user-owned machines.
+
+**Done when:** connecting a new machine is "log in with MCPAuthKit" end-to-end (browser or device-code), with auto re-login on expiry — no manual token handling.
 
 **Done when:** from claude.ai or `code.opzero.sh`, a user can see all their machines and start/observe/stop sessions on any of them.
 
@@ -103,4 +128,5 @@ Generalize the session layer so the orchestrator can manage heterogeneous agents
 
 - **Hub host:** currently `wss://code.open0p.com/ws`; target `wss://code.opzero.sh/ws`. Machine agents read `CODEZ_HUB_URL` + `CODEZ_HUB_TOKEN` (env preferred over the OAuth browser flow).
 - **Machine identity:** the hub keys each connection to a per-user Durable Object via the `mat_` token's `user_id` in MCPAuthKit D1. The machine agent and the MCP client **must resolve to the same `user_id`** or the operator sees an empty hub.
-- **Token longevity:** short-lived access tokens that fail to auto-refresh are the main reliability risk for always-on machine agents. Prefer long-lived directly-minted `mat_` tokens for non-interactive machine-to-machine connections; reserve the OAuth consent flow for user-facing clients.
+- **Token longevity:** short-lived access tokens that fail to auto-refresh are the main reliability risk for always-on machine agents. The *interim* mitigation is a long-lived directly-minted `mat_` token (used to restore `opz-2.local` on 2026-06-17), but the **target model is MCPAuthKit user login with auto re-login** (see Phase 2 auth section) — direct-mint is being retired for user-owned machines.
+- **Hosting:** site/apex on Vercel (`opzero.sh`); always-on services (MCPAuthKit, codez-hub) stay on Cloudflare Workers, exposed under `*.opzero.sh` via CNAME + CF custom hostnames. `open0p.com` is the legacy host being phased out.
