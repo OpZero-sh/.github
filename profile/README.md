@@ -54,6 +54,7 @@ The pieces below already run as standalone layers; the active work (see the [roa
 
 | Endpoint | Layer | What it's for |
 |---|---|---|
+| `code.opzero.sh` | Operator console | The north-star surface — log in once and land in your own per-user hub: see every machine you own, pair-program with Claude across them, and deploy the result. One origin over the orchestrate, code-gen, and deploy layers below. |
 | `hub.opzero.sh/mcp` | CodeZ Hub | The hosted MCP connector — add it to any MCP client (Claude, ChatGPT, Cursor, Copilot, scripts) to reach every machine you own, plus on-demand cloud containers on Fly.io. Federates your CodeZ instances behind one OAuth-protected endpoint (10 tools: list/wake machines, create/drive/dispose sessions, poll events). |
 | `auth.opzero.sh` | MCPAuthKit | OAuth 2.1 authorization server — discovery, dynamic client registration, authorize, token, and refresh. The single login and token family behind every other endpoint. |
 | `opzero.sh` | Deploy platform | The deployment platform and dashboard, plus its 36-tool MCP server — ship sites, apps, and MCP servers to Cloudflare Pages, Vercel, or Netlify, and manage projects, custom domains, and rollbacks. |
