@@ -9,6 +9,8 @@ The pieces already exist as standalone layers (see the [org overview](./profile/
 
 ---
 
+> **2026-06-17 — Hosted UI is LIVE.** `code.opzero.sh/` now serves the CodeZ web UI (codez-hub Worker static assets) with a working multi-machine picker, authenticated by browser MCPAuthKit OAuth (PKCE — log in as `jeff@opzero.io`). **Shipped this session:** custom-hostname routing finished; UI served at `/`; MCPAuthKit single-OAuth for the UI session (PKCE); machine dashboard + per-machine session list (start/resume/abort); services/health panel re-landed; machine-agent reconnect/refresh give-up fix (June-outage root cause); CodeZero→CodeZ packaging pipeline; orchestration playbooks in skillz; OpZ_cli device-code OAuth. Architecture + auth/user model in `codez-hub/docs/hosted-ui.md`. **Remaining polish** tracked as CodeZero #6–#10 + OpZ_cli #1 (hosted "This machine" phantom, default machine + projects, cloudchamber stale agent, split-brain provisioning, same-origin hub API, cli token refresh).
+
 ## Where we are today (verified)
 
 - ✅ **Deploy MCP is the mature core.** `opzero.sh` ships to Cloudflare / Vercel / Netlify via 26 MCP tools or the CLI. This is production and the most battle-tested layer.
