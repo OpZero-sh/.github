@@ -1,0 +1,77 @@
+# Reusable CI for Node repos (backend/@opzero/db, token-5-0, Infra, MCPAuthKit).
+# Supports npm or pnpm; uses Node 24 (org runtime baseline) by default.
+#
+# Caller example:
+#   jobs:
+#     ci:
+#       uses: opzero-sh/.github/.github/workflows/ci-node.yml@v1
+#       with:
+#         package-manager: pnpm
+#         run-build: false
+name: ci-node
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        default: "."
+      node-version:
+        type: string
+        default: "24"
+      package-manager:
+        description: npm or pnpm.
+        type: string
+        default: pnpm
+      pnpm-version:
+        type: string
+        default: "10.4.1"
+      run-typecheck:
+        type: boolean
+        default: true
+      run-lint:
+        type: boolean
+        default: false
+      run-test:
+        type: boolean
+        default: true
+      run-build:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+      # pnpm must be installed BEFORE setup-node so setup-node's pnpm cache works.
+      - uses: pnpm/action-setup@v4
+        if: ${{ inputs.package-manager == 'pnpm' }}
+        with:
+          version: ${{ inputs.pnpm-version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+          cache-dependency-path: ${{ inputs.working-directory }}/${{ inputs.package-manager == 'pnpm' && 'pnpm-lock.yaml' || 'package-lock.json' }}
+      # Frozen install: fail on lockfile drift rather than resolve a new tree.
+      - name: Install
+        run: ${{ inputs.package-manager == 'pnpm' && 'pnpm install --frozen-lockfile' || 'npm ci' }}
+      - name: Typecheck
+        if: ${{ inputs.run-typecheck }}
+        run: ${{ inputs.package-manager == 'pnpm' && 'pnpm run typecheck' || 'npm run typecheck' }}
+      - name: Lint
+        if: ${{ inputs.run-lint }}
+        run: ${{ inputs.package-manager == 'pnpm' && 'pnpm run lint' || 'npm run lint' }}
+      - name: Test
+        if: ${{ inputs.run-test }}
+        run: ${{ inputs.package-manager == 'pnpm' && 'pnpm test' || 'npm test' }}
+      - name: Build
+        if: ${{ inputs.run-build }}
+        run: ${{ inputs.package-manager == 'pnpm' && 'pnpm run build' || 'npm run build' }}

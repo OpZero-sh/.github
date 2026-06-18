@@ -1,0 +1,92 @@
+# Reusable npm publish via OIDC Trusted Publishing (no NPM_TOKEN anywhere).
+# Why OIDC: GA since 2025; the package's trusted-publisher config on npmjs.com names
+# this exact repo + workflow file, so npm mints a short-lived token at publish time.
+# Nothing to store or rotate. Renaming/moving the CALLER workflow file breaks the
+# trusted-publisher contract, so keep the caller path stable once configured.
+#
+# provenance: ONLY pass true for packages whose source repo is PUBLIC. Provenance
+# attestation requires a public source repo; it errors on private repos (this is the
+# bug currently breaking OpZ_cli's release.yml).
+#
+# Caller example (public package, on tag):
+#   on: { push: { tags: ["v*"] } }
+#   jobs:
+#     publish:
+#       uses: opzero-sh/.github/.github/workflows/publish-npm.yml@v1
+#       with: { provenance: true, install-command: "bun install --frozen-lockfile" }
+name: publish-npm
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        default: "."
+      node-version:
+        type: string
+        default: "24"
+      provenance:
+        description: Pass true ONLY for public source repos.
+        type: boolean
+        default: false
+      package-access:
+        type: string
+        default: public
+      install-command:
+        description: Override for pnpm/bun repos (e.g. "pnpm install --frozen-lockfile").
+        type: string
+        default: "npm ci"
+      build-command:
+        description: Run before publish if non-empty (e.g. "npm run build").
+        type: string
+        default: ""
+      test-command:
+        description: Re-run tests before publish if non-empty.
+        type: string
+        default: ""
+      verify-tag-version:
+        description: When triggered by a vX.Y.Z tag, assert it matches package.json version.
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write # required for OIDC trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          registry-url: https://registry.npmjs.org
+      # OIDC trusted publishing needs npm >= 11.5.1; runners can lag, so upgrade.
+      - name: Upgrade npm (OIDC support)
+        run: npm install -g npm@latest
+      - name: Install
+        run: ${{ inputs.install-command }}
+      - name: Test
+        if: ${{ inputs.test-command != '' }}
+        run: ${{ inputs.test-command }}
+      - name: Build
+        if: ${{ inputs.build-command != '' }}
+        run: ${{ inputs.build-command }}
+      # Guard against publishing a tag whose number disagrees with package.json,
+      # which otherwise ships a mislabeled version that cannot be un-published.
+      - name: Verify tag matches package.json version
+        if: ${{ inputs.verify-tag-version && startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Tag v$tag does not match package.json version $pkg"
+            exit 1
+          fi
+      # No NODE_AUTH_TOKEN: the OIDC id-token + trusted-publisher config authenticate.
+      - name: Publish
+        run: npm publish --access ${{ inputs.package-access }} ${{ inputs.provenance && '--provenance' || '' }}
