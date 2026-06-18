@@ -1,0 +1,13 @@
+# Keeps the reusable workflows' action references current. The plan is to pin every
+# `uses:` to a full commit SHA for supply-chain safety; Dependabot then bumps those
+# pins (and leaves a changelog) so pinning does not mean going stale. Copy this file
+# into each service repo as part of onboarding so their actions stay pinned too.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
