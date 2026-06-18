@@ -30,7 +30,7 @@ cd MCPAuthKit && npx wrangler deploy
 
 ### Start CodeZero (with Hub)
 ```bash
-cd CodeZero && CODEZ_HUB_URL="wss://code.open0p.com/ws" bun run start
+cd CodeZero && CODEZ_HUB_URL="wss://code.opzero.sh/ws" bun run start
 ```
 First run without tokens triggers browser OAuth login via MCPAuthKit.
 
@@ -73,7 +73,7 @@ CodeZero supports three auth providers (set `authProvider` in config.json):
 |------|-------------|------------|
 | Cookie (default) | `"cookie"` | Username/password form → session cookie |
 | Cloudflare Access | `"cf-access"` | Cf-Access-Jwt-Assertion header |
-| MCPAuthKit OAuth | `"authkit"` | Auto-redirect to authkit.open0p.com → callback → session cookie |
+| MCPAuthKit OAuth | `"authkit"` | Auto-redirect to auth.opzero.sh → callback → session cookie |
 
 ## Ports
 

@@ -28,7 +28,7 @@ cross-repo context that individual project guides assume you already know.
        |
        |  MCP (Streamable HTTP)
        v
-  CodeZ Hub  (code.open0p.com)
+  CodeZ Hub  (code.opzero.sh)
   Cloudflare Worker + Durable Object
        |
        |  WebSocket (per machine)
@@ -43,7 +43,7 @@ cross-repo context that individual project guides assume you already know.
 
 ### Auth chain
 
-All services authenticate through **MCPAuthKit** (`authkit.open0p.com`):
+All services authenticate through **MCPAuthKit** (`auth.opzero.sh`):
 
 - **MCP clients** (Claude.ai, Claude Desktop): OAuth 2.1 PKCE → `mat_*` tokens
 - **Machine agents** (CodeZero → Hub): OAuth 2.1 PKCE → `mat_*` tokens with `agent:ws` scope
@@ -56,12 +56,11 @@ Token prefixes: `mat_` (access, 1hr), `mrt_` (refresh, 30d), `code_` (auth code,
 
 | Domain | Service | Platform |
 |--------|---------|----------|
-| `code.open0p.com` | CodeZ Hub MCP + WS | Cloudflare Workers |
-| `authkit.open0p.com` | MCPAuthKit OAuth | Cloudflare Workers |
+| `code.opzero.sh` | CodeZ Hub MCP + WS | Cloudflare Workers |
+| `auth.opzero.sh` | MCPAuthKit OAuth | Cloudflare Workers |
 | `opzero.sh` / `opzero.io` | OpZero.sh platform | Vercel |
 
-Note: `*.opzero.sh` subdomains do NOT have SSL configured on Cloudflare.
-Use `*.open0p.com` for all Cloudflare Worker endpoints.
+Use `*.opzero.sh` for all Cloudflare Worker endpoints.
 
 ### Databases
 
@@ -93,7 +92,7 @@ Use `*.open0p.com` for all Cloudflare Worker endpoints.
 - **SHA-256 hash function** in `codez-hub/src/auth/tokens.ts` — must be byte-identical to MCPAuthKit
 - **D1 cross-binding IDs** in `codez-hub/wrangler.jsonc` — points to production MCPAuthKit D1
 - **DO naming** (`idFromName(userId)`) — changing this orphans all existing Durable Objects
-- **`*.opzero.sh` SSL** — broken, use `*.open0p.com` for all Worker endpoints
+- **Worker endpoints** — use `*.opzero.sh` for all Cloudflare Worker endpoints
 
 ## CodeZero ↔ CodeZ sync
 

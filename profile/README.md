@@ -215,7 +215,7 @@ Claude / ChatGPT              MCPAuthKit              Your MCP Server
 | OAuth 2.1 — Authorization code + PKCE (S256) | Complete |
 | Token refresh, revocation, consent UI, multi-tenant | Complete |
 
-Running in production at [authkit.open0p.com](https://authkit.open0p.com).
+Running in production at [auth.opzero.sh](https://auth.opzero.sh).
 
 ### CodeZ
 
@@ -255,7 +255,7 @@ Self-hosted. Runs on your machine, tunneled through Cloudflare. No API key requi
 
 ### CodeZ Hub
 
-`integration` — Multi-machine connection broker on Cloudflare Edge. Hub deployed at `code.open0p.com`, MCP tools and WebSocket relay operational. CodeZ client integration in progress.
+`integration` — Multi-machine connection broker on Cloudflare Edge. Hub deployed at `code.opzero.sh`, MCP tools and WebSocket relay operational. CodeZ client integration in progress.
 
 CodeZ runs on one machine. CodeZ Hub federates CodeZ instances across machines and cloud containers behind a single MCP endpoint — but it's an **operator, not a router**. The Hub doesn't decide where work goes. It holds the lines open, tells the client who's available, and connects the call.
 
@@ -285,7 +285,7 @@ The client — you, or Claude acting as your orchestrator — picks the machine 
 ║  Cloudflare Edge                                        ║
 ║                                                         ║
 ║  ┌─────────────────────────────────────────────────┐    ║
-║  │  Worker Entry (code.open0p.com/mcp)              │    ║
+║  │  Worker Entry (code.opzero.sh/mcp)              │    ║
 ║  └──────────────────────┬──────────────────────────┘    ║
 ║                         │                               ║
 ║  ┌──────────────────────▼──────────────────────────┐    ║
@@ -423,4 +423,4 @@ npx skills add opzero-sh/skillz
 - **CLI:** [npm/opzero](https://www.npmjs.com/package/opzero)
 - **MCP Server:** [npm/@opzero/mcp](https://www.npmjs.com/package/@opzero/mcp)
 - **Skills:** `npx skills add opzero-sh/skillz`
-- **AuthKit:** [authkit.open0p.com](https://authkit.open0p.com)
+- **AuthKit:** [auth.opzero.sh](https://auth.opzero.sh)
