@@ -28,7 +28,7 @@ cross-repo context that individual project guides assume you already know.
        |
        |  MCP (Streamable HTTP)
        v
-  CodeZ Hub  (code.open0p.com)
+  CodeZ Hub  (code.opzero.sh)
   Cloudflare Worker + Durable Object
        |
        |  WebSocket (per machine)
@@ -43,7 +43,7 @@ cross-repo context that individual project guides assume you already know.
 
 ### Auth chain
 
-All services authenticate through **MCPAuthKit** (`authkit.open0p.com`):
+All services authenticate through **MCPAuthKit** (`auth.opzero.sh`):
 
 - **MCP clients** (Claude.ai, Claude Desktop): OAuth 2.1 PKCE → `mat_*` tokens
 - **Machine agents** (CodeZero → Hub): OAuth 2.1 PKCE → `mat_*` tokens with `agent:ws` scope
@@ -56,12 +56,20 @@ Token prefixes: `mat_` (access, 1hr), `mrt_` (refresh, 30d), `code_` (auth code,
 
 | Domain | Service | Platform |
 |--------|---------|----------|
-| `code.open0p.com` | CodeZ Hub MCP + WS | Cloudflare Workers |
-| `authkit.open0p.com` | MCPAuthKit OAuth | Cloudflare Workers |
+| `code.opzero.sh` | CodeZ Hub MCP + WS (canonical) | Cloudflare Workers |
+| `code.open0p.com` | CodeZ Hub direct Worker route (internal alias) | Cloudflare Workers |
+| `auth.opzero.sh` | MCPAuthKit OAuth (canonical) | Cloudflare Workers |
 | `opzero.sh` / `opzero.io` | OpZero.sh platform | Vercel |
 
-Note: `*.opzero.sh` subdomains do NOT have SSL configured on Cloudflare.
-Use `*.open0p.com` for all Cloudflare Worker endpoints.
+Host migration (done): `*.opzero.sh` is now the canonical host for the
+Worker endpoints — `code.opzero.sh` and `auth.opzero.sh` serve live with
+SSL. The earlier "`*.opzero.sh` has no SSL, use `*.open0p.com`" guidance
+is obsolete. `code.opzero.sh` is a Cloudflare-for-SaaS custom hostname on
+the `open0p.com` zone, dispatched by the `opzero-router` Worker (`*/*`
+catch-all) via a `CODEZ_HUB` service binding → `codez-hub`. `code.opzero.sh`
+is a CNAME → `code.open0p.com` (same CF edge). `code.open0p.com/*` remains
+bound directly to the Worker as an internal alias/fallback. Use
+`code.opzero.sh` everywhere; treat `open0p.com` as deprecated.
 
 ### Databases
 
@@ -93,7 +101,7 @@ Use `*.open0p.com` for all Cloudflare Worker endpoints.
 - **SHA-256 hash function** in `codez-hub/src/auth/tokens.ts` — must be byte-identical to MCPAuthKit
 - **D1 cross-binding IDs** in `codez-hub/wrangler.jsonc` — points to production MCPAuthKit D1
 - **DO naming** (`idFromName(userId)`) — changing this orphans all existing Durable Objects
-- **`*.opzero.sh` SSL** — broken, use `*.open0p.com` for all Worker endpoints
+- **Canonical Worker host** — use `code.opzero.sh` / `auth.opzero.sh`; `*.open0p.com` is a deprecated internal alias (the old "opzero.sh has no SSL" note is obsolete)
 
 ## CodeZero ↔ CodeZ sync
 
