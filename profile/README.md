@@ -13,6 +13,7 @@ It's built as composable layers — auth, orchestration, deploy, test — each u
 [![MCP](https://img.shields.io/npm/v/@opzero/mcp?style=for-the-badge&label=MCP&logo=npm&logoColor=white)](https://www.npmjs.com/package/@opzero/mcp)
 
 ---
+<img width="1345" height="1207" alt="image" src="https://github.com/user-attachments/assets/d4a667b3-e3f5-4660-b4a3-ae64a3a8f5fb" />
 
 ## Three layers, one login
 
