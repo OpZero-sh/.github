@@ -53,7 +53,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       # TODO(dependabot): pin these to full commit SHAs; dependabot.yml keeps majors current.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ inputs.bun-version }}
